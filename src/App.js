@@ -6,6 +6,7 @@ import Pleading from "./pictures/pleading-eyes.png"
 import Pumpkin from "./pictures/pumpkin.png"
 import Skull from "./pictures/skull.png"
 import Blank from "./pictures/blank.png"
+import ScoreBoard from "./components/ScoreBoard.js"
 const width = 8;
 const candyColors = [
   Angry,
@@ -20,14 +21,17 @@ function App() {
   const [currentRandomBoard, setRandomBoard] = useState([])
   const [squareBeingDragged, setSquareBeingDragged] = useState(null)
   const [squareBeingReplaced, setSquareBeingReplaced] = useState(null)
+  const [scoreboard, setScoreboard] = useState(0)
 
   const removeColumnOfThree = () => {
 
     for (let i = 0; i <= 47; i++) {
       const columnOfThree = [i, i + width, i + width * 2]
       const decidedColor = currentRandomBoard[i]
+      const isBlank = currentRandomBoard[i] === Blank
 
-      if (columnOfThree.every(square => currentRandomBoard[square] === decidedColor)) {
+      if (columnOfThree.every(square => currentRandomBoard[square] === decidedColor  && !isBlank)) {
+        setScoreboard(score => score + 30)
         columnOfThree.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -39,8 +43,9 @@ function App() {
     for (let i = 0; i <= 39; i++) {
       const columnOfFour = [i, i + width, i + width * 2, i + width * 3]
       const decidedColor = currentRandomBoard[i]
-
-      if (columnOfFour.every(square => currentRandomBoard[square] === decidedColor)) {
+      const isBlank = currentRandomBoard[i] === Blank
+      if (columnOfFour.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
+        setScoreboard(score => score + 40)
         columnOfFour.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -53,10 +58,11 @@ function App() {
       const rowOfThree = [i, i + 1, i + 2]
       const decidedColor = currentRandomBoard[i]
       const dontCheck = [6, 7, 14, 15, 22, 23, 30, 31, 38, 39, 46, 47, 54, 55, 63, 64]
-
+      const isBlank = currentRandomBoard[i] === Blank
       if (dontCheck.includes(i)) continue
 
-      if (rowOfThree.every(square => currentRandomBoard[square] === decidedColor)) {
+      if (rowOfThree.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
+        setScoreboard(score => score + 30)
         rowOfThree.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -69,10 +75,11 @@ function App() {
       const rowOfFour = [i, i + 1, i + 2, i + 3]
       const decidedColor = currentRandomBoard[i]
       const dontCheck = [5, 6, 7, 13, 14, 15, 21, 22, 23, 29, 30, 31, 37, 38, 39, 45, 46, 47, 53, 54, 55, 62, 63, 64]
-
+      const isBlank = currentRandomBoard[i] === Blank
       if (dontCheck.includes(i)) continue
 
-      if (rowOfFour.every(square => currentRandomBoard[square] === decidedColor)) {
+      if (rowOfFour.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
+        setScoreboard(score => score + 30)
         rowOfFour.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -107,6 +114,7 @@ function App() {
 
 
   }
+  console.log(scoreboard)
   const dragEnd = (e) => {
     console.log(e.target)
     console.log('dragEnd')
@@ -174,6 +182,8 @@ function App() {
 
 
   return (
+    <>
+  
     <div className="app">
       <div className="board">
         {currentRandomBoard.map((candyColor, index) => (
@@ -192,8 +202,9 @@ function App() {
           />
         ))}
       </div>
-
+          <ScoreBoard score={scoreboard}/>
     </div>
+    </>
   )
 }
 
