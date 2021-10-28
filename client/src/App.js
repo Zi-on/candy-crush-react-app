@@ -7,6 +7,8 @@ import Pumpkin from "./pictures/pumpkin.png"
 import Skull from "./pictures/skull.png"
 import Blank from "./pictures/blank.png"
 import ScoreBoard from "./components/ScoreBoard.js"
+import MovesLeft from "./components/MovesLeft.js"
+import LastScore from "./components/LastScore.js"
 const width = 8;
 const candyColors = [
   Angry,
@@ -22,16 +24,29 @@ function App() {
   const [squareBeingDragged, setSquareBeingDragged] = useState(null)
   const [squareBeingReplaced, setSquareBeingReplaced] = useState(null)
   const [scoreboard, setScoreboard] = useState(0)
+  const [movesleft, setMovesLeft] = useState(10)
+  const [finalScore, setFinalScore] = useState(0)
+  const [move, setMove] = useState(false)
 
+  const endGame = () => {
+    if(movesleft == 0) {
+      setFinalScore(scoreboard)
+      setMovesLeft(10)
+      setScoreboard(0)
+    }
+  }
+  console.log(finalScore)
   const removeColumnOfThree = () => {
 
     for (let i = 0; i <= 47; i++) {
       const columnOfThree = [i, i + width, i + width * 2]
       const decidedColor = currentRandomBoard[i]
       const isBlank = currentRandomBoard[i] === Blank
-
+      
       if (columnOfThree.every(square => currentRandomBoard[square] === decidedColor  && !isBlank)) {
         setScoreboard(score => score + 30)
+        setMovesLeft(move => move - 1)
+      
         columnOfThree.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -46,6 +61,7 @@ function App() {
       const isBlank = currentRandomBoard[i] === Blank
       if (columnOfFour.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
         setScoreboard(score => score + 40)
+        setMovesLeft(move => move - 1)
         columnOfFour.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -63,6 +79,7 @@ function App() {
 
       if (rowOfThree.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
         setScoreboard(score => score + 30)
+        setMovesLeft(move => move - 1)
         rowOfThree.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -80,6 +97,7 @@ function App() {
 
       if (rowOfFour.every(square => currentRandomBoard[square] === decidedColor && !isBlank)) {
         setScoreboard(score => score + 30)
+        setMovesLeft(move => move - 1)
         rowOfFour.forEach(square => currentRandomBoard[square] = Blank)
         return true
       }
@@ -111,19 +129,16 @@ function App() {
     console.log(e.target)
     console.log('dragDrop')
     setSquareBeingReplaced(e.target)
-
-
   }
-  console.log(scoreboard)
+
   const dragEnd = (e) => {
     console.log(e.target)
     console.log('dragEnd')
     const squareBeingDraggedId = parseInt(squareBeingDragged.getAttribute('data-id'));
     const squareBeingReplacedId = parseInt(squareBeingReplaced.getAttribute('data-id'));
-
-    currentRandomBoard[squareBeingReplacedId] = squareBeingDragged.getAttribute('src')
-    currentRandomBoard[squareBeingDraggedId] = squareBeingReplaced.getAttribute('src')
-
+    
+      currentRandomBoard[squareBeingReplacedId] = squareBeingDragged.getAttribute('src')
+      currentRandomBoard[squareBeingDraggedId] = squareBeingReplaced.getAttribute('src')
     const validMoves = [
       squareBeingDraggedId - 1,
       squareBeingDraggedId + 1,
@@ -137,19 +152,18 @@ function App() {
     const isRowOfThree = removeRowOfThree()
     const isColumnOfThree = removeColumnOfThree()
 
-    if (validMove && (isRowOfFour || isRowOfThree || isColumnOfFour || isColumnOfThree)) {
-      setSquareBeingDragged(null)
-      setSquareBeingReplaced(null)
-      console.log('if', validMove)
+    
+    console.log(validMove)
+    if (squareBeingReplacedId && validMove && (isRowOfFour || isRowOfThree || isColumnOfFour || isColumnOfThree)) {
+    setSquareBeingDragged(null)
+    setSquareBeingReplaced(null)
+    setRandomBoard([...currentRandomBoard])      
     }
     else {
       console.log('else')
-      currentRandomBoard[squareBeingReplacedId] = squareBeingReplaced.style.backgroundColor
-      currentRandomBoard[squareBeingDraggedId] = squareBeingDragged.style.backgroundColor
-      removeColumnOfThree(false)
-      removeRowOfFour(false)
-      removeColumnOfFour(false)
-      removeRowOfThree(false)
+      currentRandomBoard[squareBeingReplacedId] = squareBeingReplaced.getAttribute('src')
+      currentRandomBoard[squareBeingDraggedId] = squareBeingDragged.getAttribute('src')
+      
       setRandomBoard([...currentRandomBoard])
     }
   }
@@ -175,12 +189,12 @@ function App() {
       removeColumnOfThree()
       moveDown()
       setRandomBoard([...currentRandomBoard])
+      endGame()
     }, 100)
     return () => clearInterval(timer)
-  }, [removeColumnOfFour, removeRowOfFour, removeColumnOfThree, removeRowOfThree, moveDown, currentRandomBoard]);
+  }, [removeColumnOfFour, removeRowOfFour, removeColumnOfThree, removeRowOfThree, moveDown, endGame, currentRandomBoard]);
 
-
-
+ 
   return (
     <>
   
@@ -203,6 +217,8 @@ function App() {
         ))}
       </div>
           <ScoreBoard score={scoreboard}/>
+          <MovesLeft moves={movesleft}/>
+          <LastScore score={finalScore}/>
     </div>
     </>
   )

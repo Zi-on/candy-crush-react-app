@@ -1,0 +1,33 @@
+.app {
+  display: flex;
+  padding: 30px;
+  align-self: center;
+}
+
+.board {
+  width: 560px;
+  height: 560px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.board img {
+  width: 70px;
+  height: 70px;
+}
+
+.score-board{
+  font-size: 20px;
+  display: flex;
+  margin-left: 5vw;
+  align-self: start;
+  align-items: center;
+}
+.moves-left {
+  font-size: 20px;
+  display: flex;
+  margin-left: 5vw;
+  
+  align-self: start;
+  align-items: center;
+}
